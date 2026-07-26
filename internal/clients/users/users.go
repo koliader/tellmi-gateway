@@ -46,6 +46,23 @@ func (c *Client) Login(ctx context.Context, req model.LoginReq) (*pb.AuthRes, *c
 	return res, nil, nil
 }
 
+func (c *Client) Refresh(ctx context.Context, req model.RefreshReq) (*pb.RefreshRes, *codes.Code, error) {
+	if err := c.ConnectUsersService(&ctx); err != nil {
+		return nil, nil, err
+	}
+
+	arg := pb.RefreshReq{
+		RefreshToken: req.RefreshToken,
+	}
+
+	res, err := usersGrpcServiceClient.Refresh(ctx, &arg)
+	if err != nil {
+		return nil, grpc_error.GetErrorCode(err), grpc_error.ErrorResponse(err)
+	}
+
+	return res, nil, nil
+}
+
 func (c *Client) GetUserById(ctx context.Context, req *model.IDReq) (*pb.UserRes, *codes.Code, error) {
 	if err := c.ConnectUsersService(&ctx); err != nil {
 		return nil, nil, err

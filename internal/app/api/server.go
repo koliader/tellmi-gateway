@@ -18,11 +18,11 @@ import (
 var timeout = time.Second * 60
 
 type Server struct {
-	router        *gin.Engine
-	config        config.Config
-	usersClient   users_client.Client
-	postsClient   posts_client.Client
-	tokenMaker    token.Maker
+	router      *gin.Engine
+	config      config.Config
+	usersClient users_client.Client
+	postsClient posts_client.Client
+	tokenMaker  token.Maker
 }
 
 func NewServer(config config.Config) (*Server, error) {
@@ -56,7 +56,7 @@ func (s *Server) setupRouter() {
 		},
 		AllowAllOrigins:  true,
 		AllowCredentials: true,
-		AllowHeaders:     []string{"Content-Type", "Authorization"},
+		AllowHeaders:     []string{"Content-Type", "Authorization", "Refresh-Token"},
 	})
 
 	router.Use(c)
@@ -68,6 +68,7 @@ func (s *Server) setupRouter() {
 	// auth
 	router.POST("/auth/register", s.register)
 	router.POST("/auth/login", s.login)
+	router.POST("/auth/refresh", s.refresh)
 
 	// users
 	router.GET("/users/:id", s.getUserById)

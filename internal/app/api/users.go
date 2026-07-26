@@ -25,7 +25,10 @@ func (s *Server) register(ctx *gin.Context) {
 		ctx.JSON(api_error.ErrorCode(code), api_error.ErrorResponse(err))
 		return
 	}
-	ctx.JSON(http.StatusOK, res)
+	ctx.JSON(http.StatusOK, gin.H{
+		"accessToken":  res.AccessToken,
+		"refreshToken": res.RefreshToken,
+	})
 }
 
 func (s *Server) login(ctx *gin.Context) {
@@ -43,7 +46,31 @@ func (s *Server) login(ctx *gin.Context) {
 		ctx.JSON(api_error.ErrorCode(code), api_error.ErrorResponse(err))
 		return
 	}
-	ctx.JSON(http.StatusOK, res)
+	ctx.JSON(http.StatusOK, gin.H{
+		"accessToken":  res.AccessToken,
+		"refreshToken": res.RefreshToken,
+	})
+}
+
+func (s *Server) refresh(ctx *gin.Context) {
+	var req model.RefreshReq
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, api_error.ErrorInvalidArguments(err))
+		return
+	}
+
+	c, cancel := context.WithTimeout(ctx, timeout)
+	defer cancel()
+
+	res, code, err := s.usersClient.Refresh(c, req)
+	if err != nil {
+		ctx.JSON(api_error.ErrorCode(code), api_error.ErrorResponse(err))
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{
+		"accessToken":  res.AccessToken,
+		"refreshToken": res.RefreshToken,
+	})
 }
 
 func (s *Server) getUserById(ctx *gin.Context) {
@@ -101,5 +128,5 @@ func (s *Server) updateUser(ctx *gin.Context) {
 		ctx.JSON(api_error.ErrorCode(code), api_error.ErrorResponse(err))
 		return
 	}
-	ctx.JSON(http.StatusOK, res.User)
+	ctx.JSON(http.StatusOK, res)
 }
