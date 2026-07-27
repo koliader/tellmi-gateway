@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/koliader/tellmi-gateway/internal/domain/model"
+	"github.com/koliader/tellmi-sdk/model"
 	api_error "github.com/koliader/tellmi-gateway/internal/lib/error/api"
 	"github.com/koliader/tellmi-gateway/internal/lib/middleware"
 )
@@ -83,7 +83,7 @@ func (s *Server) getUserById(ctx *gin.Context) {
 	c, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 
-	res, code, err := s.usersClient.GetUserById(c, &req)
+	res, code, err := s.usersClient.GetUserById(c, &req, model.AuthHeaders{})
 	if err != nil {
 		ctx.JSON(api_error.ErrorCode(code), api_error.ErrorResponse(err))
 		return

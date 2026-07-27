@@ -8,11 +8,11 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 
-	posts_client "github.com/koliader/tellmi-gateway/internal/clients/posts"
-	users_client "github.com/koliader/tellmi-gateway/internal/clients/users"
+	posts_client "github.com/koliader/tellmi-sdk/clients/posts"
+	users_client "github.com/koliader/tellmi-sdk/clients/users"
 	"github.com/koliader/tellmi-gateway/internal/config"
 	"github.com/koliader/tellmi-gateway/internal/lib/middleware"
-	"github.com/koliader/tellmi-gateway/internal/lib/token"
+	"github.com/koliader/tellmi-sdk/token"
 )
 
 var timeout = time.Second * 60
@@ -26,8 +26,8 @@ type Server struct {
 }
 
 func NewServer(config config.Config) (*Server, error) {
-	usersClient := users_client.NewClient(config)
-	postsClient := posts_client.NewClient(config)
+	usersClient := users_client.NewClient(config.UsersServiceAddress)
+	postsClient := posts_client.NewClient(config.PostsServiceAddress)
 	tokenMaker, err := token.NewJWTMaker(config.TokenKey)
 	if err != nil {
 		return nil, fmt.Errorf("error to create server: %v", err)

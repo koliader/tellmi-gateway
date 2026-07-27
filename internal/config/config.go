@@ -1,6 +1,6 @@
 package config
 
-import "github.com/spf13/viper"
+import sdkconfig "github.com/koliader/tellmi-sdk/config"
 
 type Config struct {
 	UsersServiceAddress string `mapstructure:"USERS_SERVICE_ADDRESS"`
@@ -10,16 +10,8 @@ type Config struct {
 	Environment         string `mapstructure:"ENVIRONMENT"`
 }
 
-func LoadConfig(path string) (config Config, err error) {
-	viper.AddConfigPath(path)
-	viper.SetConfigName("app")
-	viper.SetConfigType("env")
-	viper.AutomaticEnv()
-
-	err = viper.ReadInConfig()
-	if err != nil {
-		return
-	}
-	err = viper.Unmarshal(&config)
-	return
+func LoadConfig(path string) (Config, error) {
+	var cfg Config
+	err := sdkconfig.LoadConfig(path, &cfg)
+	return cfg, err
 }

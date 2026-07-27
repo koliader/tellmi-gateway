@@ -1,6 +1,6 @@
 package middleware
 
-import "github.com/koliader/tellmi-gateway/internal/lib/token"
+import "github.com/koliader/tellmi-sdk/token"
 
 type Middleware struct {
 	tokenMaker token.Maker

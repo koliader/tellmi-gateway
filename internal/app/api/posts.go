@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/koliader/tellmi-gateway/internal/domain/model"
+	"github.com/koliader/tellmi-sdk/model"
 	api_error "github.com/koliader/tellmi-gateway/internal/lib/error/api"
 	"github.com/koliader/tellmi-gateway/internal/lib/middleware"
 )

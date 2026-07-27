@@ -9,7 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	api_error "github.com/koliader/tellmi-gateway/internal/lib/error/api"
-	"github.com/koliader/tellmi-gateway/internal/lib/token"
+	"github.com/koliader/tellmi-sdk/token"
 )
 
 const (
