@@ -25,16 +25,21 @@ func authHandleFunc(ctx *gin.Context, tokenMaker token.Maker) (*token.Payload, *
 		return nil, nil, err
 	}
 	fields := strings.Fields(authHeader)
-	if len(fields) < 2 {
+	if len(fields) == 0 {
 		err := errors.New("invalid authorization header format")
 		return nil, nil, err
 	}
-	authorizationType := strings.ToLower(fields[0])
-	if authorizationType != authorizationTypeBearer {
-		err := fmt.Errorf("unsupported authorization type %v", authorizationType)
-		return nil, nil, err
+	var accessToken string
+	if len(fields) == 1 {
+		accessToken = fields[0]
+	} else {
+		authorizationType := strings.ToLower(fields[0])
+		if authorizationType != authorizationTypeBearer {
+			err := fmt.Errorf("unsupported authorization type %v", authorizationType)
+			return nil, nil, err
+		}
+		accessToken = fields[1]
 	}
-	accessToken := fields[1]
 	payload, err := tokenMaker.VerifyToken(accessToken)
 	if err != nil {
 		return nil, nil, err

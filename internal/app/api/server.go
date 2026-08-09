@@ -7,6 +7,7 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
 
 	posts_client "github.com/koliader/tellmi-sdk/clients/posts"
 	users_client "github.com/koliader/tellmi-sdk/clients/users"
@@ -28,9 +29,10 @@ type Server struct {
 func NewServer(config config.Config) (*Server, error) {
 	usersClient := users_client.NewClient(config.UsersServiceAddress)
 	postsClient := posts_client.NewClient(config.PostsServiceAddress)
+
 	tokenMaker, err := token.NewJWTMaker(config.TokenKey)
 	if err != nil {
-		return nil, fmt.Errorf("error to create server: %v", err)
+		return nil, fmt.Errorf("error to create token maker: %v", err)
 	}
 
 	server := Server{
@@ -45,6 +47,7 @@ func NewServer(config config.Config) (*Server, error) {
 
 func (s *Server) setupRouter() {
 	router := gin.Default()
+	router.ContextWithFallback = true
 
 	c := cors.New(cors.Config{
 		AllowMethods: []string{
@@ -59,7 +62,7 @@ func (s *Server) setupRouter() {
 		AllowHeaders:     []string{"Content-Type", "Authorization", "Refresh-Token"},
 	})
 
-	router.Use(c)
+	router.Use(c, otelgin.Middleware("tellmi-gateway"), requestLogger())
 
 	m := middleware.NewMiddleware(s.tokenMaker)
 	authRoutes := router.Group("/").Use(m.AuthMiddleware())

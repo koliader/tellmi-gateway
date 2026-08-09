@@ -6,12 +6,13 @@ type Config struct {
 	UsersServiceAddress string `mapstructure:"USERS_SERVICE_ADDRESS"`
 	PostsServiceAddress string `mapstructure:"POSTS_SERVICE_ADDRESS"`
 	ServerAddress       string `mapstructure:"SERVER_ADDRESS"`
+	HealthAddress       string `mapstructure:"HEALTH_ADDRESS"`
 	TokenKey            string `mapstructure:"TOKEN_KEY"`
 	Environment         string `mapstructure:"ENVIRONMENT"`
 }
 
 func LoadConfig(path string) (Config, error) {
 	var cfg Config
-	err := sdkconfig.LoadConfig(path, &cfg)
+	err := sdkconfig.Load(path, &cfg)
 	return cfg, err
 }

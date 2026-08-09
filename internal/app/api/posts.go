@@ -5,9 +5,9 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/koliader/tellmi-sdk/model"
 	api_error "github.com/koliader/tellmi-gateway/internal/lib/error/api"
 	"github.com/koliader/tellmi-gateway/internal/lib/middleware"
+	"github.com/koliader/tellmi-sdk/model"
 )
 
 func (s *Server) createPost(ctx *gin.Context) {
@@ -34,10 +34,16 @@ func (s *Server) createPost(ctx *gin.Context) {
 }
 
 func (s *Server) listPosts(ctx *gin.Context) {
+	var req model.PaginationReq
+	if err := ctx.ShouldBindUri(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, api_error.ErrorInvalidArguments(err))
+		return
+	}
+
 	c, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 
-	res, code, err := s.postsClient.ListPosts(c)
+	res, code, err := s.postsClient.ListPosts(c, req)
 	if err != nil {
 		ctx.JSON(api_error.ErrorCode(code), api_error.ErrorResponse(err))
 		return
